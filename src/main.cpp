@@ -1,5 +1,6 @@
 #include <Arduino.h>
 #include <TinyGPS++.h>
+#include "AsyncGpsHandler/AsyncGpsHandler.h"
 
 // Serial and decoding for GPS
 HardwareSerial ss(1);
