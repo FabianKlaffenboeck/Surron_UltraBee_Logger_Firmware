@@ -2,7 +2,7 @@
 #include <TinyGPS++.h>
 
 // Serial and decoding for GPS
-HardwareSerial ss(0);
+HardwareSerial ss(1);
 TinyGPSPlus gps;
 
 void setup() {
