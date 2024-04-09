@@ -9,7 +9,7 @@
 #include "TinyGPS++.h"
 #include <Arduino.h>
 
-struct GPSData {
+struct GpsData {
     uint32_t log;
     uint32_t lat;
     uint32_t height;
@@ -24,7 +24,7 @@ public:
 
     void loop();
 
-    GPSData getData();
+    GpsData getData();
 
     bool hasError();
 

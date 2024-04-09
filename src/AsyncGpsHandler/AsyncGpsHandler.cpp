@@ -23,8 +23,9 @@ void AsyncGpsHandler::loop() {
     _hasError = _gpsParser.failedChecksum() || !_gpsParser.satellites.isValid() || !_gpsParser.satellites.isValid();
 }
 
-GPSData AsyncGpsHandler::getData() {
-    return GPSData();
+GpsData AsyncGpsHandler::getData() {
+    GpsData gpsData = {0, 0, 0, 0, 0};
+    return gpsData;
 }
 
 bool AsyncGpsHandler::hasError() {
