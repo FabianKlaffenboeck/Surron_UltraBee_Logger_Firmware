@@ -10,11 +10,12 @@
 #include <Arduino.h>
 
 struct GpsData {
-    uint32_t log;
-    uint32_t lat;
-    uint32_t height;
-    uint32_t gpsSpeed;
-    uint16_t satCnt;
+    uint32_t date;
+    uint32_t time;
+    double lat;
+    double lng;
+    double altitude;
+    uint8_t sat_cnt;
 };
 
 class AsyncGpsHandler {
@@ -31,10 +32,12 @@ public:
 private:
     uint8_t _rxPin = 0;
     uint8_t _txPin = 0;
-    uint32_t _lastUpdateT = 0;
     HardwareSerial _hws = Serial1;
+    //uint32_t _lastUpdateT = 0;
+    GpsData _gpsData;
     bool _hasError = false;
     TinyGPSPlus _gpsParser;
+
     bool _dataParser();
 };
 
