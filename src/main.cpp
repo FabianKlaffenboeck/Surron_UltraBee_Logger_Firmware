@@ -1,8 +1,12 @@
 #include <Arduino.h>
+#include "AsyncGpsHandler/AsyncGpsHandler.h"
+
+AsyncGpsHandler asyncGpsHandler(32, 33);
+
 void setup() {
-// write your initialization code here
+    Serial.begin(115200);
 }
 
 void loop() {
-// write your code here
+    asyncGpsHandler.loop();
 }
