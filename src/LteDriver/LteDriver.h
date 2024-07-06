@@ -7,7 +7,7 @@
 
 #define TINY_GSM_MODEM_SIM7600
 
-#include <TinyGsmClient.h>
+#include <TinyGSM.h>
 #include <cstdlib>
 
 #define SerialAT Serial2
@@ -17,11 +17,11 @@
 class LteDriver {
 
 public:
-    LteDriver(uint8_t rxPin, uint8_t txPin,  uint8_t pwrPin);
+    LteDriver(uint8_t rxPin, uint8_t txPin, uint8_t pwrPin, char *apn, char *gprsUser, char *gprsPass);
 
-    bool connect(char *apn, char *gprsUser, char *gprsPass);
+    bool connect();
 
-    bool connectionAlive();
+    bool connectionAlive() const;
 
     TinyGsmClient *getClient();
 
@@ -39,9 +39,11 @@ private:
     TinyGsm *_modem;
     TinyGsmClient *_client;
 
+    bool _conLive;
+
     bool checkConnectionUp();
 
-    void resetModem();
+    void resetModem() const;
 
 };
 
