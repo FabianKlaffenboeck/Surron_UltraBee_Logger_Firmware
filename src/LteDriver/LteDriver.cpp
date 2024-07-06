@@ -17,9 +17,9 @@ LteDriver::LteDriver(uint8_t rxPin, uint8_t txPin, uint8_t pwrPin, char *apn, ch
     _gprsUser = gprsUser;
     _gprsPass = gprsPass;
 
-    _apn = "";
-    _gprsUser = "";
-    _gprsPass = "";
+    _apn = apn;
+    _gprsUser = gprsUser;
+    _gprsPass = gprsPass;
 
     _conLive = false;
 
@@ -101,7 +101,7 @@ bool LteDriver::checkConnectionUp() {
 }
 
 /*
- * resets the modem wia the PWRKE> pin
+ * resets the modem wia the PWRKEY pin
  */
 void LteDriver::resetModem() const {
     digitalWrite(_pwrPin, LOW);
