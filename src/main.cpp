@@ -1,6 +1,8 @@
 #include <Arduino.h>
-#include "AsyncGpsHandler/AsyncGpsHandler.h"
 
+#include "LteDriver/LteDriver.h"
+
+LteDriver lteDriver = LteDriver(17, 16, 18);
 
 void setup() {
     Serial.begin(115200);

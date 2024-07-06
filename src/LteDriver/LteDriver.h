@@ -10,13 +10,16 @@
 #include <TinyGsmClient.h>
 #include <cstdlib>
 
+#define SerialAT Serial2
+//#define TINY_GSM_RX_BUFFER 650
+
 
 class LteDriver {
 
 public:
-    LteDriver(uint8_t rxPin, uint8_t txPin, char *apn, char *gprsUser, char *gprsPass);
+    LteDriver(uint8_t rxPin, uint8_t txPin,  uint8_t pwrPin);
 
-    bool connect();
+    bool connect(char *apn, char *gprsUser, char *gprsPass);
 
     bool connectionAlive();
 
@@ -27,13 +30,18 @@ public:
 private:
     uint8_t _rxPin;
     uint8_t _txPin;
-    TinyGsm *_modem;
-    TinyGsmClient *_client;
+    uint8_t _pwrPin;
+
     char *_apn;
     char *_gprsUser;
     char *_gprsPass;
 
+    TinyGsm *_modem;
+    TinyGsmClient *_client;
+
     bool checkConnectionUp();
+
+    void resetModem();
 
 };
 
