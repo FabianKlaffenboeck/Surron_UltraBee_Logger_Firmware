@@ -23,11 +23,13 @@ LteDriver::LteDriver(uint8_t rxPin, uint8_t txPin, uint8_t pwrPin, char *apn, ch
 
     _conLive = false;
 
-    _modem = new TinyGsmSim7600(SerialAT);
+    _hws = &Serial2;
+
+    _modem = new TinyGsmSim7600(*_hws);
     _client = new TinyGsmClient(*_modem);
 
     pinMode(_pwrPin, OUTPUT);
-    SerialAT.begin(115200, SERIAL_8N1, _rxPin, _txPin);
+    _hws->begin(115200, SERIAL_8N1, _rxPin, _txPin);
 }
 
 
