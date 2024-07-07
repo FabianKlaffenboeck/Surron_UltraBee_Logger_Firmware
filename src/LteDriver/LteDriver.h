@@ -10,7 +10,6 @@
 #include <TinyGSM.h>
 #include <cstdlib>
 
-#define SerialAT Serial2
 //#define TINY_GSM_RX_BUFFER 650
 
 
@@ -40,6 +39,8 @@ private:
     TinyGsmClient *_client;
 
     bool _conLive;
+
+    HardwareSerial *_hws;
 
     bool checkConnectionUp();
 
