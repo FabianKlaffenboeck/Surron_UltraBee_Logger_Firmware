@@ -107,6 +107,8 @@ bool LteDriver::checkConnectionUp() {
  */
 void LteDriver::resetModem() const {
     digitalWrite(_pwrPin, LOW);
-    delay(500);
+    delay(200);
     digitalWrite(_pwrPin, HIGH);
+    delay(200);
+    digitalWrite(_pwrPin, LOW);
 }
