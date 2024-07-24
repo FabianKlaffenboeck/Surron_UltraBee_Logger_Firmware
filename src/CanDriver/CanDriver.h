@@ -1,5 +1,5 @@
 //
-// Created by FabianKlaffenboeck on 22/07/2024.
+// Created by FabianKlaffenboeck on 24/07/2024.
 //
 
 #ifndef FIRMWARE_CANDRIVER_H
@@ -14,26 +14,13 @@ struct CanMsg {
     uint8_t data[8];
 };
 
-class CanDriver {
-public:
-    CanDriver(uint8_t rxPin, uint8_t txPin, int rx_queue_size, CAN_speed_t busSpeed);
 
-    void  canHandlerLoop();
+bool CanInit(uint8_t rxPin, uint8_t txPin, int rx_queue_size, CAN_speed_t busSpeed);
 
-    bool init();
+void CanHandlerLoop();
 
-    void canWrite(CanMsg dataFrame);
+void CanWrite(CanMsg dataFrame);
 
-    bool readFrame();
-
-
-private:
-    uint8_t _rxPin;
-    uint8_t _txPin;
-    uint8_t _rx_queue_size;
-    CAN_speed_t _busSpeed;
-    CAN_device_t CAN_cfg;
-};
-
+bool CanReadFrame(CanMsg *canMsg);
 
 #endif //FIRMWARE_CANDRIVER_H
