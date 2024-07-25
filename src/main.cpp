@@ -7,9 +7,6 @@
 //LteDriver lteDriver = LteDriver(17, 16, 18, "webaut", "", "");
 //GpsDriver gpsDriver = GpsDriver(33, 32);
 
-unsigned long previousMillis = 0;   // will store last time a CAN Message was send
-const int interval = 1000;          // interval at which send CAN Messages (milliseconds)
-
 void setup() {
     Serial.begin(115200);
 
@@ -19,18 +16,7 @@ void setup() {
 }
 
 void loop() {
-    if (millis() - previousMillis >= interval) {
-        CanMsg canMsg{};
-        canMsg.id = 0xff;
-        canMsg.dlc = 8;
-        CanWrite(canMsg);
-    }
-
-    CanMsg canReadMsg{};
-    if (CanReadFrame(&canReadMsg)) {
-        Serial.println("rec");
-    }
-
+    CanHandlerLoop();
 //    lteDriver.lteHandlerLoop();
 //    gpsDriver.gpsHandlerLoop();
 }

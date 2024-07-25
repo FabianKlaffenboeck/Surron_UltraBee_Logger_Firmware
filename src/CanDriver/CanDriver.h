@@ -7,20 +7,13 @@
 
 #include <cstdlib>
 #include "CAN_config.h"
-
-struct CanMsg {
-    uint32_t id = 0;
-    uint32_t dlc = 0;
-    uint8_t data[8];
-};
+#include "CanModels.h"
 
 
 bool CanInit(uint8_t rxPin, uint8_t txPin, int rx_queue_size, CAN_speed_t busSpeed);
 
-void CanHandlerLoop();
-
 void CanWrite(CanMsg dataFrame);
 
-bool CanReadFrame(CanMsg *canMsg);
+void CanHandlerLoop();
 
 #endif //FIRMWARE_CANDRIVER_H
