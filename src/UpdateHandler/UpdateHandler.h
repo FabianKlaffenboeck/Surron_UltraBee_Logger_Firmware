@@ -20,7 +20,6 @@ private:
     uint64_t actualBytes = 0;
 
     uint8_t *dataBytes;
-
 };
 
 #endif //FIRMWARE_UPDATEHANDLER_H

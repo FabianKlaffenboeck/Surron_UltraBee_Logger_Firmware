@@ -3,6 +3,7 @@
 //
 
 #include <esp32-hal-log.h>
+#include <Arduino.h>
 #include "CanDriver.h"
 #include "../UpdateHandler/UpdateHandler.h"
 #include "DeviceConfig.h"
@@ -63,7 +64,7 @@ CanMsg parsResponseToCanMsg(ResponsePacket responsePacket) {
 }
 
 
-bool CanInit(gpio_num_t rxPin, gpio_num_t txPin, int rx_queue_size, int busSpeed) {
+bool CanInit(gpio_num_t rxPin, gpio_num_t txPin, int busSpeed) {
 
 
     can_general_config_t g_config = CAN_GENERAL_CONFIG_DEFAULT(rxPin, txPin, CAN_MODE_NORMAL);
@@ -109,11 +110,11 @@ bool CanReadFrame(CanMsg *canMsg) {
     //Wait for rxMessage to be received
     can_message_t rxMessage;
     if (can_receive(&rxMessage, pdMS_TO_TICKS(0)) != ESP_OK) {
-        log_e("Failed to receive rxMessage");
+//        log_e("Failed to receive rxMessage");
         return false;
     }
 
-    log_e("Message received");
+//    log_e("Message received");
 
     if (rxMessage.flags & CAN_MSG_FLAG_RTR) {
         return false;
@@ -152,18 +153,10 @@ ResponsePacket acctOnCommand(CommandPacket cmP) {
         updateHandler.init(expBytes);
     }
     if (FLASH_DATA == cmP._cmd) {
-
-        if ((cmP._targetId != DeviceId) || msCIsValid(cmP)) {
-            responsePacket._data[1] = 0xff;
-            return responsePacket;
-        }
-
-        for (int i = 0; i < cmP._size; ++i) {
-            updateHandler.addByte(cmP._data[i]);
-        }
+        updateHandler.addBytes(cmP._data, cmP._size);
     }
     if (FLASH_END == cmP._cmd) {
-        updateHandler.completeUpdate(true,"wrong");
+        updateHandler.completeUpdate(true, "wrong");
     }
 
     return responsePacket;

@@ -10,7 +10,7 @@
 #include "driver/can.h"
 
 
-bool CanInit(gpio_num_t rxPin, gpio_num_t txPin, int rx_queue_size, int busSpeed);
+bool CanInit(gpio_num_t rxPin, gpio_num_t txPin, int busSpeed);
 
 void CanWrite(CanMsg dataFrame);
 
