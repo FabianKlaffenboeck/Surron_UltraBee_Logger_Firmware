@@ -7,8 +7,18 @@
 
 #include <cstdlib>
 
+// can Ids
 #define CommandPacketId 0x7d1
 #define ResponsePacketId 0x7d2
+
+// commands for protocol
+#define LIST_DEVICES 0x01
+#define FLASH_BEGIN 0x02
+#define FLASH_DATA 0x03
+#define FLASH_END 0x04
+#define FLASH_DWL_BEGIN 0x05
+#define FLASH_DWL_DATA 0x06
+#define FLASH_DWL_END 0x07
 
 struct CanMsg {
     uint32_t id = 0;

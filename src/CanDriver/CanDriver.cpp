@@ -2,14 +2,35 @@
 // Created by FabianKlaffenboeck on 24/07/2024.
 //
 
+#include <esp32-hal-log.h>
 #include "CanDriver.h"
-#include "ESP32CAN.h"
-#include "Arduino.h"
+#include "../UpdateHandler/UpdateHandler.h"
+#include "DeviceConfig.h"
 
-CAN_device_t CAN_cfg;
+UpdateHandler updateHandler = UpdateHandler();
+
+uint8_t expectedMsC = 0;
+
+
+bool msCIsValid(CommandPacket commandPacket) {
+    bool valid = commandPacket._data[0] == expectedMsC;
+
+    if (expectedMsC == 255) {
+        expectedMsC = 0;
+    } else {
+        expectedMsC++;
+    }
+
+    return valid;
+}
 
 CommandPacket parsCanMsgToComPack(CanMsg canMsg) {
     CommandPacket commandPacket{};
+
+    if (canMsg.id != CommandPacketId) {
+        log_e("wrong CommandPackId, can not pars");
+        return commandPacket;
+    }
 
     commandPacket._cmd = canMsg.data[0];
     commandPacket._crc = (canMsg.data[1] & 0b00011111);
@@ -27,6 +48,8 @@ CommandPacket parsCanMsgToComPack(CanMsg canMsg) {
 CanMsg parsResponseToCanMsg(ResponsePacket responsePacket) {
     CanMsg canMsg{};
 
+    canMsg.id = ResponsePacketId;
+    canMsg.dlc = 8;
     canMsg.data[0] = responsePacket._cmd;
     canMsg.data[1] = ((responsePacket._crc & 0b00011111) | ((responsePacket._size & 0b00000111) << 5));
     canMsg.data[2] = responsePacket._senderId;
@@ -40,85 +63,119 @@ CanMsg parsResponseToCanMsg(ResponsePacket responsePacket) {
 }
 
 
-bool CanInit(uint8_t rxPin, uint8_t txPin, int rx_queue_size, CAN_speed_t busSpeed) {
-    CAN_cfg.speed = CAN_SPEED_125KBPS;
-    CAN_cfg.tx_pin_id = GPIO_NUM_4;
-    CAN_cfg.rx_pin_id = GPIO_NUM_5;
-    CAN_cfg.rx_queue = xQueueCreate(rx_queue_size, sizeof(CAN_cfg));
-    // Init CAN Module
-    ESP32Can.CANInit();
+bool CanInit(gpio_num_t rxPin, gpio_num_t txPin, int rx_queue_size, int busSpeed) {
+
+
+    can_general_config_t g_config = CAN_GENERAL_CONFIG_DEFAULT(rxPin, txPin, CAN_MODE_NORMAL);
+    can_timing_config_t t_config = CAN_TIMING_CONFIG_500KBITS();
+    can_filter_config_t f_config = CAN_FILTER_CONFIG_ACCEPT_ALL();
+
+    if (can_driver_install(&g_config, &t_config, &f_config) != ESP_OK) {
+        log_e("can driver install not working");
+    }
+
+    if (can_start() != ESP_OK) {
+        log_e("can start did not working");
+    }
+
     return true;
 }
 
 
 void CanWrite(CanMsg dataFrame) {
-    CAN_frame_t tx_frame;
+
+    can_message_t message;
+
+    message.identifier = dataFrame.id;
+    message.data_length_code = dataFrame.dlc;
 
     if (dataFrame.exd) {
-        tx_frame.FIR.B.FF = CAN_frame_ext;
+        message.flags = CAN_MSG_FLAG_EXTD;
     } else {
-        tx_frame.FIR.B.FF = CAN_frame_std;
+        message.flags = CAN_MSG_FLAG_NONE;
     }
 
-    tx_frame.MsgID = dataFrame.id;
-    tx_frame.FIR.B.DLC = dataFrame.dlc;
-    tx_frame.data.u8[0] = dataFrame.data[0];
-    tx_frame.data.u8[1] = dataFrame.data[1];
-    tx_frame.data.u8[2] = dataFrame.data[2];
-    tx_frame.data.u8[3] = dataFrame.data[3];
-    tx_frame.data.u8[4] = dataFrame.data[4];
-    tx_frame.data.u8[5] = dataFrame.data[5];
-    tx_frame.data.u8[6] = dataFrame.data[6];
-    tx_frame.data.u8[7] = dataFrame.data[7];
-    ESP32Can.CANWriteFrame(&tx_frame);
+    for (int i = 0; i < dataFrame.dlc; i++) {
+        message.data[i] = dataFrame.data[i];
+    }
+
+    if (can_transmit(&message, pdMS_TO_TICKS(0)) != ESP_OK) {
+        log_e("failed to queue message for transmission");
+    }
 }
 
 bool CanReadFrame(CanMsg *canMsg) {
-    CAN_frame_t rx_frame;
-    if (xQueueReceive(CAN_cfg.rx_queue, &rx_frame, 3 * portTICK_PERIOD_MS) == pdTRUE) {
-        canMsg->exd = rx_frame.FIR.B.FF == CAN_frame_ext;
-        canMsg->id = rx_frame.MsgID;
-        canMsg->dlc = rx_frame.FIR.B.DLC;
-        canMsg->data[0] = rx_frame.data.u8[0];
-        canMsg->data[1] = rx_frame.data.u8[1];
-        canMsg->data[2] = rx_frame.data.u8[2];
-        canMsg->data[3] = rx_frame.data.u8[3];
-        canMsg->data[4] = rx_frame.data.u8[4];
-        canMsg->data[5] = rx_frame.data.u8[5];
-        canMsg->data[6] = rx_frame.data.u8[6];
-        canMsg->data[7] = rx_frame.data.u8[7];
-        return true;
+
+    //Wait for rxMessage to be received
+    can_message_t rxMessage;
+    if (can_receive(&rxMessage, pdMS_TO_TICKS(0)) != ESP_OK) {
+        log_e("Failed to receive rxMessage");
+        return false;
     }
-    return false;
+
+    log_e("Message received");
+
+    if (rxMessage.flags & CAN_MSG_FLAG_RTR) {
+        return false;
+    }
+
+    canMsg->id = rxMessage.identifier;
+    canMsg->exd = rxMessage.flags & CAN_MSG_FLAG_EXTD;
+    canMsg->dlc = rxMessage.data_length_code;
+
+    for (int i = 0; i < rxMessage.data_length_code; i++) {
+        canMsg->data[i] = rxMessage.data[i];
+    }
+
+    return true;
 }
 
-void actOnPack(CanMsg canMsg) {
-    if (canMsg.id == 0x7d1) {
-        CommandPacket cmP = parsCanMsgToComPack(canMsg);
+// FIXME Code cleanup later
+ResponsePacket acctOnCommand(CommandPacket cmP) {
 
-        Serial.println("------------------------------------------------");
-        Serial.println("_cmd");
-        Serial.println(cmP._cmd);
+    ResponsePacket responsePacket{};
+    responsePacket._cmd = cmP._cmd;
+    responsePacket._senderId = DeviceId;
+    responsePacket._crc = 0;
+    responsePacket._size = 0;
+    responsePacket._data[0] = cmP._data[0];
+    responsePacket._data[1] = 0;
+    responsePacket._data[2] = 0;
+    responsePacket._data[3] = 0;
+    responsePacket._data[4] = 0;
 
-        Serial.println("_crc");
-        Serial.println(cmP._crc);
+    if (LIST_DEVICES == cmP._cmd) {
 
-        Serial.println("_size");
-        Serial.println(cmP._size);
+    }
+    if (FLASH_BEGIN == cmP._cmd) {
+        uint32_t expBytes = cmP._data[0] + (cmP._data[1] << 8) + (cmP._data[2] << 16) + (cmP._data[3] << 24);
+        updateHandler.init(expBytes);
+    }
+    if (FLASH_DATA == cmP._cmd) {
 
-        Serial.println("_targetId");
-        Serial.println(cmP._targetId);
-
-        Serial.println("_data");
-
-        for (const auto &item: cmP._data) {
-            Serial.println(item);
+        if ((cmP._targetId != DeviceId) || msCIsValid(cmP)) {
+            responsePacket._data[1] = 0xff;
+            return responsePacket;
         }
 
-//        CanWrite(parsResponseToCanMsg());
+        for (int i = 0; i < cmP._size; ++i) {
+            updateHandler.addByte(cmP._data[i]);
+        }
     }
-    if (canMsg.id == 0x7d2) {
-        Serial.println("Resonse");
+    if (FLASH_END == cmP._cmd) {
+        updateHandler.completeUpdate(true,"wrong");
+    }
+
+    return responsePacket;
+}
+
+// FIXME this is just a temporary function to test receiving
+void actOnPack(CanMsg canMsg) {
+    if (canMsg.id == CommandPacketId) {
+        ResponsePacket reP = acctOnCommand(parsCanMsgToComPack(canMsg));
+        CanWrite(parsResponseToCanMsg(reP));
+    } else {
+        // add callback function
     }
 }
 

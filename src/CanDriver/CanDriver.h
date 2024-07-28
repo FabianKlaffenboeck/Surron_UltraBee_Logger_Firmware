@@ -6,11 +6,11 @@
 #define FIRMWARE_CANDRIVER_H
 
 #include <cstdlib>
-#include "CAN_config.h"
 #include "CanModels.h"
+#include "driver/can.h"
 
 
-bool CanInit(uint8_t rxPin, uint8_t txPin, int rx_queue_size, CAN_speed_t busSpeed);
+bool CanInit(gpio_num_t rxPin, gpio_num_t txPin, int rx_queue_size, int busSpeed);
 
 void CanWrite(CanMsg dataFrame);
 
