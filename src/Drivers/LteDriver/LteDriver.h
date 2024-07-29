@@ -7,7 +7,7 @@
 
 #define TINY_GSM_MODEM_SIM7600
 
-#include <TinyGSM.h>
+#include "TinyGSM.h"
 #include <cstdlib>
 
 //#define TINY_GSM_RX_BUFFER 650
@@ -44,7 +44,7 @@ private:
 
     bool checkConnectionUp();
 
-    void resetModem() const;
+    void resetModem();
 
 };
 

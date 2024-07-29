@@ -5,7 +5,7 @@
 #ifndef FIRMWARE_GPSDRIVER_H
 #define FIRMWARE_GPSDRIVER_H
 
-#include <TinyGPS++.h>
+#include "TinyGPS++.h"
 #include <cstdlib>
 
 struct GpsData {
