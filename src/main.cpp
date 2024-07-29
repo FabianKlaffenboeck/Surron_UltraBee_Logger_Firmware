@@ -10,8 +10,6 @@
 //GpsDriver gpsDriver = GpsDriver(33, 32);
 
 
-uint64_t planedBytes = 86144;
-
 void setup() {
     Serial.begin(115200);
 
