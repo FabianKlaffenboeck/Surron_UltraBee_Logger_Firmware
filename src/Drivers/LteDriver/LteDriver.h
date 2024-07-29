@@ -24,7 +24,7 @@ public:
 
     TinyGsmClient *getClient();
 
-    void lteHandlerLoop();
+    void loop();
 
 private:
     uint8_t _rxPin;

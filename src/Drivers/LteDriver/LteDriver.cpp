@@ -9,7 +9,6 @@
  * Driver for the LteModem
  */
 LteDriver::LteDriver(uint8_t rxPin, uint8_t txPin, uint8_t pwrPin, char *apn, char *gprsUser, char *gprsPass) {
-    Serial.println("test01");
     _rxPin = rxPin;
     _txPin = txPin;
     _pwrPin = pwrPin;
@@ -41,8 +40,6 @@ bool LteDriver::connect() {
     _hws->begin(115200, SERIAL_8N1, 17, 16);
 
     resetModem();
-
-    Serial.println("test01");
 
     delay(10000);
     _modem->init();
@@ -98,7 +95,7 @@ TinyGsmClient *LteDriver::getClient() {
 /*
  * handler loop to run housekeeping tasks and check connection state
  */
-void LteDriver::lteHandlerLoop() {
+void LteDriver::loop() {
     _conLive = checkConnectionUp();
 
     if (!_conLive){

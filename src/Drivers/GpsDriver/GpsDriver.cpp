@@ -18,7 +18,7 @@ GpsDriver::GpsDriver(uint8_t rxPin, uint8_t txPin) {
     _hws->begin(9600, SERIAL_8N1, _rxPin, _txPin);
 }
 
-void GpsDriver::gpsHandlerLoop() {
+void GpsDriver::loop() {
 
     while (_hws->available()) {
         _parsData(_hws->read());

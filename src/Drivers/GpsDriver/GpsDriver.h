@@ -22,7 +22,7 @@ class GpsDriver {
 public:
     GpsDriver(uint8_t rxPin, uint8_t txPin);
 
-    void gpsHandlerLoop();
+    void loop();
 
     bool hasSignal() const;
 
