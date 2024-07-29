@@ -9,5 +9,6 @@
 #define VIN ""
 #define MQTT_USERNAME ""
 #define MQTT_PW ""
+#define MQTT_BASETOPIC "VehicleTracking/" VIN "/"
 
 #endif //FIRMWARE_SECRETS_H

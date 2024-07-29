@@ -24,7 +24,8 @@ void setup() {
     lteDriver.connect();
     CanInit(GPIO_NUM_4, GPIO_NUM_5, 500);
     mqttHandler.init();
-    mqttHandler.setBaseTopic("Surron/");
+
+    mqttHandler.setBaseTopic(MQTT_BASETOPIC);
 }
 
 void loop() {
