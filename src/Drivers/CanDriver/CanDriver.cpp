@@ -5,9 +5,11 @@
 #include <esp32-hal-log.h>
 #include "CanDriver.h"
 
+bool _hasCallback = false;
+
+void (*cb_func)(CanMsg canMsg);
 
 bool CanInit(gpio_num_t rxPin, gpio_num_t txPin, int busSpeed) {
-
 
     can_general_config_t g_config = CAN_GENERAL_CONFIG_DEFAULT(rxPin, txPin, CAN_MODE_NORMAL);
     can_timing_config_t t_config = CAN_TIMING_CONFIG_500KBITS();
@@ -74,5 +76,13 @@ bool CanReadFrame(CanMsg *canMsg) {
 void CanHandlerLoop() {
     CanMsg dataFrame;
     if (CanReadFrame(&dataFrame)) {
+        if (_hasCallback) {
+            cb_func(dataFrame);
+        }
     }
+}
+
+void CanAddCallBack(void (*fun_ptr)(CanMsg canMsg)) {
+    cb_func = fun_ptr;
+    _hasCallback = true;
 }

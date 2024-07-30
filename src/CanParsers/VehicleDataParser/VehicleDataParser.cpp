@@ -3,3 +3,7 @@
 //
 
 #include "VehicleDataParser.h"
+
+void VehicleDataParser::pars(CanMsg canMsg) {
+
+}

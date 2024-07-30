@@ -6,6 +6,7 @@
 #include "MqttHandler/MqttHandler.h"
 //#include "Secrets_TEMPLATE.h"
 #include "Secrets.h"
+#include "CanParsers/VehicleDataParser/VehicleDataParser.h"
 
 LteDriver lteDriver = LteDriver(17, 16, 18, "webaut", "", "");
 GpsDriver gpsDriver = GpsDriver(33, 32);
@@ -15,8 +16,11 @@ MqttHandler mqttHandler = MqttHandler(MQTT_BROAKER,
                                       MQTT_PW,
                                       lteDriver.getClient());
 
-uint32_t _lastReconnectAttempt = 0;
+VehicleDataParser vehicleDataParser;
 
+void CanCallback(CanMsg canMsg) {
+    vehicleDataParser.pars(canMsg);
+}
 
 void setup() {
     Serial.begin(115200);
@@ -26,15 +30,11 @@ void setup() {
     mqttHandler.init();
 
     mqttHandler.setBaseTopic(MQTT_BASETOPIC);
+
+    CanAddCallBack(CanCallback);
 }
 
 void loop() {
-
-    uint32_t t = millis();
-    if (t - _lastReconnectAttempt > 10000L) {
-        mqttHandler.pub("GPS_LOC", 255);
-        _lastReconnectAttempt = t;
-    }
 
     CanHandlerLoop();
     lteDriver.loop();
