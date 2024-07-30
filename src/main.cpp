@@ -4,8 +4,8 @@
 #include "Drivers/GpsDriver/GpsDriver.h"
 #include "Drivers/CanDriver/CanDriver.h"
 #include "MqttHandler/MqttHandler.h"
-//#include "Secrets_TEMPLATE.h"
-#include "Secrets.h"
+#include "Secrets_TEMPLATE.h"
+//#include "Secrets.h"
 #include "CanParsers/VehicleDataParser/VehicleDataParser.h"
 
 LteDriver lteDriver = LteDriver(17, 16, 18, "webaut", "", "");
