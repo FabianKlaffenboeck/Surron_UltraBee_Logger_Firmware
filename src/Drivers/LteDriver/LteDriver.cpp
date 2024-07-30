@@ -25,11 +25,10 @@ LteDriver::LteDriver(uint8_t rxPin, uint8_t txPin, uint8_t pwrPin, char *apn, ch
 
     _hws = &Serial2;
 
-    _modem = new TinyGsmSim7600(*_hws);
+    _modem = new TinyGsm(*_hws);
     _client = new TinyGsmClient(*_modem);
 
     pinMode(_pwrPin, OUTPUT);
-    _hws->begin(115200, SERIAL_8N1, _rxPin, _txPin);
 }
 
 
@@ -38,9 +37,15 @@ LteDriver::LteDriver(uint8_t rxPin, uint8_t txPin, uint8_t pwrPin, char *apn, ch
  * return true if connection is established and false if an error occurred
  */
 bool LteDriver::connect() {
-    if (!_modem->init()) {
-        return false;
-    }
+    _hws->begin(115200, SERIAL_8N1, 17, 16);
+
+    resetModem();
+
+    delay(10000);
+    _modem->init();
+//    if (!_modem->init()) {
+//        return false;
+//    }
 
     log_d("Modem Info: ", _modem->getModemInfo());
 
@@ -90,8 +95,13 @@ TinyGsmClient *LteDriver::getClient() {
 /*
  * handler loop to run housekeeping tasks and check connection state
  */
-void LteDriver::lteHandlerLoop() {
+void LteDriver::loop() {
     _conLive = checkConnectionUp();
+
+    if (!_conLive){
+        connect();
+    }
+
 }
 
 /*
@@ -105,7 +115,7 @@ bool LteDriver::checkConnectionUp() {
 /*
  * resets the modem wia the PWRKEY pin
  */
-void LteDriver::resetModem() const {
+void LteDriver::resetModem() {
     digitalWrite(_pwrPin, LOW);
     delay(200);
     digitalWrite(_pwrPin, HIGH);
