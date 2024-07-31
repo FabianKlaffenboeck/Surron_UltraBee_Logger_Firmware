@@ -34,6 +34,11 @@ bool GpsDriver::_parsData(char gpsData) {
 
     _gpsParser->encode(gpsData);
 
+    if (!_gpsParser->location.isValid())
+    {
+        return false;
+    }
+
     _gpsData = {
             _gpsParser->date.value(),
             _gpsParser->time.value(),
