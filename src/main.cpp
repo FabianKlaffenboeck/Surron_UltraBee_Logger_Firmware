@@ -8,8 +8,8 @@
 #include "Drivers/GpsDriver/GpsDriver.h"
 #include "Drivers/CanDriver/CanDriver.h"
 #include "MqttHandler/MqttHandler.h"
-//#include "Secrets_TEMPLATE.h"
-#include "Secrets.h"
+#include "Secrets_TEMPLATE.h"
+//#include "Secrets.h"
 #include "CanParsers/VehicleDataParser/VehicleDataParser.h"
 #include "models/VehicleData.h"
 #include "Settings.h"
@@ -32,13 +32,10 @@ MqttHandler mqttHandler = MqttHandler(MQTT_BROAKER,
 
 
 void CanCallback(CanMsg canMsg) {
-    VehicleBusData busData = vehicleDataParser.pars(canMsg);
-    vehicleData.speed = busData.speed;
+    vehicleDataParser.pars(canMsg);
 }
 
-void setup() {
-    Serial.begin(115200);
-
+void setupOTA() {
     WiFi.softAP(ssid, password);
     IPAddress IP = WiFi.softAPIP();
     Serial.print("AP IP address: ");
@@ -48,6 +45,17 @@ void setup() {
     });
     ElegantOTA.begin(&server);
     server.begin();
+}
+
+void otaLoop() {
+    server.handleClient();
+    ElegantOTA.loop();
+}
+
+void setup() {
+    Serial.begin(115200);
+
+    setupOTA();
 
     lteDriver.connect();
     CanInit(GPIO_NUM_4, GPIO_NUM_5, 500);
@@ -63,13 +71,16 @@ void loop() {
     gpsDriver.loop();
     mqttHandler.loop();
 
-    server.handleClient();
-    ElegantOTA.loop();
+    otaLoop();
 
-    vehicleData.lat = gpsDriver.getLocData().lat;
-    vehicleData.lng = gpsDriver.getLocData().lng;
-    vehicleData.altitude = gpsDriver.getLocData().altitude;
-    vehicleData.time = gpsDriver.getLocData().time;
+    VehicleBusData busData = vehicleDataParser.getLatestData();
+
+    vehicleData.lat = gpsDriver.getLatestData().lat;
+    vehicleData.lng = gpsDriver.getLatestData().lng;
+    vehicleData.altitude = gpsDriver.getLatestData().altitude;
+    vehicleData.time = gpsDriver.getLatestData().time;
+    vehicleData.vehicleSpeed = busData.speed;
+
 
     if (millis() - lastMqttPubTime > MQTT_UPDATERATE) {
         lastMqttPubTime = millis();

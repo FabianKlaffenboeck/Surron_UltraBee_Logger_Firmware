@@ -5,8 +5,10 @@
 #include "VehicleDataParser.h"
 #include "models/VehicleData.h"
 
-VehicleBusData VehicleDataParser::pars(CanMsg canMsg) {
-    VehicleBusData busData;
+void VehicleDataParser::pars(CanMsg canMsg) {
 
-    return busData;
+}
+
+VehicleBusData VehicleDataParser::getLatestData() {
+    return _latestData;
 }

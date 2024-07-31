@@ -24,8 +24,7 @@ public:
 
     void loop();
 
-    GpsData getLocData();
-
+    GpsData getLatestData();
 
 private:
     uint8_t _rxPin;

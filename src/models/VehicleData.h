@@ -6,7 +6,7 @@
 #define FIRMWARE_VEHICLEDATA_H
 
 struct VehicleData {
-    uint8_t speed = 0;
+    uint8_t vehicleSpeed = 0;
     uint32_t time = 0;
     double lat = 0;
     double lng = 0;

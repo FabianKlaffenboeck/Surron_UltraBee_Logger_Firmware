@@ -25,7 +25,7 @@ void GpsDriver::loop() {
     }
 }
 
-GpsData GpsDriver::getLocData() {
+GpsData GpsDriver::getLatestData() {
     return _gpsData;
 }
 

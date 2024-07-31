@@ -76,15 +76,14 @@ void MqttHandler::pub(const char *publishTopic, uint8_t data) {
 }
 
 void MqttHandler::pub(const char *publishTopic, VehicleData data) {
-    char topicConcat[255];
+    char topicConcat[128];
     strcpy(topicConcat, _baseTopic);
     strcat(topicConcat, publishTopic);
-
 
     JsonDocument doc;
     char buffer[1024];
 
-    doc["speed"] = data.speed;
+    doc["speed"] = data.vehicleSpeed;
     doc["time"] = data.time;
     doc["lat"] = data.lat;
     doc["lng"] = data.lng;

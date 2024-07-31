@@ -78,14 +78,6 @@ bool LteDriver::connect() {
 }
 
 /*
- * true if connection is live and can be used
- * false if no connection is present
- */
-bool LteDriver::connectionAlive() const {
-    return _conLive;
-}
-
-/*
  * client object to use for further communication (http/mqtt)
  */
 TinyGsmClient *LteDriver::getClient() {

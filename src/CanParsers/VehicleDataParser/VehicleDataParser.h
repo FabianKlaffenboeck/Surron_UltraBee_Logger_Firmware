@@ -8,13 +8,18 @@
 #include "../../Drivers/CanDriver/CanModels.h"
 #include "models/VehicleData.h"
 
-struct VehicleBusData{
+struct VehicleBusData {
     uint8_t speed = 0;
 };
 
 class VehicleDataParser {
 public:
-    VehicleBusData pars(CanMsg canMsg);
+    void pars(CanMsg canMsg);
+
+    VehicleBusData getLatestData();
+
+private:
+    VehicleBusData _latestData;
 };
 
 
