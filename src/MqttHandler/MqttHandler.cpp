@@ -3,6 +3,7 @@
 //
 
 #include "MqttHandler.h"
+#include <ArduinoJson.h>
 
 MqttHandler::MqttHandler(const char *broker, const char *deviceName, const char *userName, const char *pw,
                          Client *client) {
@@ -65,13 +66,33 @@ void MqttHandler::subTopic(const char *topic) {
 
 void MqttHandler::pub(const char *publishTopic, uint8_t data) {
 
-    char topicConcat[100];
+    char topicConcat[255];
     strcpy(topicConcat, _baseTopic);
     strcat(topicConcat, publishTopic);
 
     char dataArray[8];
     dtostrf(data, 1, 2, dataArray);
     _mqtt->publish(topicConcat, dataArray);
+}
+
+void MqttHandler::pub(const char *publishTopic, VehicleData data) {
+    char topicConcat[255];
+    strcpy(topicConcat, _baseTopic);
+    strcat(topicConcat, publishTopic);
+
+
+    JsonDocument doc;
+    char buffer[1024];
+
+    doc["speed"] = data.speed;
+    doc["time"] = data.time;
+    doc["lat"] = data.lat;
+    doc["lng"] = data.lng;
+    doc["altitude"] = data.altitude;
+
+    serializeJson(doc, buffer);
+
+    _mqtt->publish(topicConcat, buffer);
 }
 
 

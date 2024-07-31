@@ -6,11 +6,15 @@
 #define FIRMWARE_VEHICLEDATAPARSER_H
 
 #include "../../Drivers/CanDriver/CanModels.h"
+#include "models/VehicleData.h"
 
+struct VehicleBusData{
+    uint8_t speed = 0;
+};
 
 class VehicleDataParser {
 public:
-    void pars(CanMsg canMsg);
+    VehicleBusData pars(CanMsg canMsg);
 };
 
 

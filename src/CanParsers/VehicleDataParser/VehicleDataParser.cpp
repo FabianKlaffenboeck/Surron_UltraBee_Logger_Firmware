@@ -3,7 +3,10 @@
 //
 
 #include "VehicleDataParser.h"
+#include "models/VehicleData.h"
 
-void VehicleDataParser::pars(CanMsg canMsg) {
+VehicleBusData VehicleDataParser::pars(CanMsg canMsg) {
+    VehicleBusData busData;
 
+    return busData;
 }

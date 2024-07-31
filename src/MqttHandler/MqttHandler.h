@@ -8,6 +8,7 @@
 #include <cstdlib>
 #include <Client.h>
 #include <PubSubClient.h>
+#include "../models/VehicleData.h"
 
 //enum publishTopics {
 //    GPS_LOC = "gps_location"
@@ -26,6 +27,8 @@ public:
     void subTopic(const char *topic);
 
     void pub(const char *publishTopic, uint8_t data);
+
+    void pub(const char *publishTopic, VehicleData data);
 
 private:
     PubSubClient *_mqtt;
