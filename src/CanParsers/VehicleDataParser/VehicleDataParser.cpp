@@ -6,7 +6,12 @@
 #include "models/VehicleData.h"
 
 void VehicleDataParser::pars(CanMsg canMsg) {
-
+    switch (canMsg.id) {
+        case 0x221:
+            _latestData.speed = canMsg.data[0];
+        default:
+            return;
+    }
 }
 
 VehicleBusData VehicleDataParser::getLatestData() {
