@@ -66,12 +66,12 @@ void setup() {
 
 void loop() {
 
+    otaLoop();
+
     CanHandlerLoop();
     lteDriver.loop();
     gpsDriver.loop();
     mqttHandler.loop();
-
-    otaLoop();
 
     VehicleBusData busData = vehicleDataParser.getLatestData();
 
