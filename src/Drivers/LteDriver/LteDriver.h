@@ -20,8 +20,6 @@ public:
 
     bool connect();
 
-    bool connectionAlive() const;
-
     TinyGsmClient *getClient();
 
     void loop();

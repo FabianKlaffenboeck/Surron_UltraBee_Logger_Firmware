@@ -37,7 +37,7 @@ LteDriver::LteDriver(uint8_t rxPin, uint8_t txPin, uint8_t pwrPin, char *apn, ch
  * return true if connection is established and false if an error occurred
  */
 bool LteDriver::connect() {
-    _hws->begin(115200, SERIAL_8N1, 17, 16);
+    _hws->begin(115200, SERIAL_8N1, _rxPin, _txPin);
 
     resetModem();
 
@@ -75,14 +75,6 @@ bool LteDriver::connect() {
     log_i("apn connected");
 
     return true;
-}
-
-/*
- * true if connection is live and can be used
- * false if no connection is present
- */
-bool LteDriver::connectionAlive() const {
-    return _conLive;
 }
 
 /*

@@ -5,7 +5,7 @@
 #ifndef FIRMWARE_GPSDRIVER_H
 #define FIRMWARE_GPSDRIVER_H
 
-#include "TinyGPS++.h"
+#include "TinyGPSPlus.h"
 #include <cstdlib>
 
 struct GpsData {
@@ -24,10 +24,7 @@ public:
 
     void loop();
 
-    bool hasSignal() const;
-
-    GpsData getLocData();
-
+    GpsData getLatestData();
 
 private:
     uint8_t _rxPin;
@@ -37,7 +34,6 @@ private:
     TinyGPSPlus *_gpsParser;
 
     GpsData _gpsData;
-    bool _hasSignal;
 
     bool _parsData(char gpsData);
 };

@@ -8,18 +8,22 @@
 #include "Drivers/GpsDriver/GpsDriver.h"
 #include "Drivers/CanDriver/CanDriver.h"
 #include "MqttHandler/MqttHandler.h"
-#include "Secrets_TEMPLATE.h"
-//#include "Secrets.h"
+//#include "Secrets_TEMPLATE.h"
+#include "Secrets.h"
 #include "CanParsers/VehicleDataParser/VehicleDataParser.h"
+#include "models/VehicleData.h"
+#include "Settings.h"
 
 WebServer server(80);
 const char *ssid = "ESP32-Access-Point";
 const char *password = "123456789";
 
+unsigned long lastMqttPubTime = 0;
 
+VehicleData vehicleData;
 VehicleDataParser vehicleDataParser;
 LteDriver lteDriver = LteDriver(17, 16, 18, "webaut", "", "");
-GpsDriver gpsDriver = GpsDriver(33, 32);
+GpsDriver gpsDriver = GpsDriver(27, 26);
 MqttHandler mqttHandler = MqttHandler(MQTT_BROAKER,
                                       VIN,
                                       MQTT_USERNAME,
@@ -31,9 +35,7 @@ void CanCallback(CanMsg canMsg) {
     vehicleDataParser.pars(canMsg);
 }
 
-void setup() {
-    Serial.begin(115200);
-
+void setupOTA() {
     WiFi.softAP(ssid, password);
     IPAddress IP = WiFi.softAPIP();
     Serial.print("AP IP address: ");
@@ -43,6 +45,17 @@ void setup() {
     });
     ElegantOTA.begin(&server);
     server.begin();
+}
+
+void otaLoop() {
+    server.handleClient();
+    ElegantOTA.loop();
+}
+
+void setup() {
+    Serial.begin(115200);
+
+    setupOTA();
 
     lteDriver.connect();
     CanInit(GPIO_NUM_4, GPIO_NUM_5, 500);
@@ -53,11 +66,24 @@ void setup() {
 
 void loop() {
 
+    otaLoop();
+
     CanHandlerLoop();
     lteDriver.loop();
     gpsDriver.loop();
     mqttHandler.loop();
 
-    server.handleClient();
-    ElegantOTA.loop();
+    VehicleBusData busData = vehicleDataParser.getLatestData();
+
+    vehicleData.lat = gpsDriver.getLatestData().lat;
+    vehicleData.lng = gpsDriver.getLatestData().lng;
+    vehicleData.altitude = gpsDriver.getLatestData().altitude;
+    vehicleData.time = gpsDriver.getLatestData().time;
+    vehicleData.vehicleSpeed = busData.speed;
+
+
+    if (millis() - lastMqttPubTime > MQTT_UPDATERATE) {
+        lastMqttPubTime = millis();
+        mqttHandler.pub("vehileData", vehicleData);
+    }
 }
