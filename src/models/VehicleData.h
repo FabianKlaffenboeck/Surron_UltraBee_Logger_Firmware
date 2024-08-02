@@ -11,6 +11,7 @@ struct VehicleData {
     double lat = 0;
     double lng = 0;
     double altitude = 0;
+    bool ACC = false;
 };
 
 #endif //FIRMWARE_VEHICLEDATA_H
