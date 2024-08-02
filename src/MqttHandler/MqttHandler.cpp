@@ -88,6 +88,7 @@ void MqttHandler::pub(const char *publishTopic, VehicleData data) {
     doc["lat"] = data.lat;
     doc["lng"] = data.lng;
     doc["altitude"] = data.altitude;
+    doc["ACC"] = data.ACC;
 
     serializeJson(doc, buffer);
 
