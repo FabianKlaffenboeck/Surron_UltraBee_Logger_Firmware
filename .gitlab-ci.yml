@@ -1,3 +1,6 @@
+variables:
+  PIO_CONFIG_NAME: "az-delivery-devkit-v4"
+
 include:
   project: 'FKLab/cicd_dry_templates'
-  file: 'complete/pio/PlatformIo_Esp32.yml'
+  file: 'templates/pio_pipeline.yml'
