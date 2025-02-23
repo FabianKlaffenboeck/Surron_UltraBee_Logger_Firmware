@@ -65,6 +65,7 @@ void MqttHandler::subTopic(const char *topic) {
 }
 
 void MqttHandler::pub(const char *publishTopic, uint8_t data) {
+
     char topicConcat[255];
     strcpy(topicConcat, _baseTopic);
     strcat(topicConcat, publishTopic);
@@ -93,3 +94,6 @@ void MqttHandler::pub(const char *publishTopic, VehicleData data) {
 
     _mqtt->publish(topicConcat, buffer);
 }
+
+
+
