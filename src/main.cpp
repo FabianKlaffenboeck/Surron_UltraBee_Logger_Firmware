@@ -8,10 +8,15 @@
 #include "UpdateHandler/UpdateHandler.h"
 
 #include "MqttHandler/MqttHandler.h"
-#include "Secrets_TEMPLATE.h"
-#include "Secrets.h"
 #include "models/VehicleData.h"
 #include "Settings.h"
+
+#if __has_include("Secrets.h")
+#include "Secrets.h"
+#else
+#include "Secrets_TEMPLATE.h"
+#endif
+
 
 unsigned long lastMqttPubTime = 0;
 
