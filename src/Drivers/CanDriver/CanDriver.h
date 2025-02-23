@@ -16,6 +16,6 @@ void CanWrite(CanMsg dataFrame);
 
 void CanHandlerLoop();
 
-void CanAddCallBack(void (*fun_ptr)(CanMsg canMsg));
+void CanAddCallBack(void(*fun_ptr)(CanMsg canMsg));
 
 #endif //FIRMWARE_CANDRIVER_H

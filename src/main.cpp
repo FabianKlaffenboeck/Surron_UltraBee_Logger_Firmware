@@ -42,7 +42,6 @@ void setup() {
 }
 
 void loop() {
-
     CanHandlerLoop();
     lteDriver.loop();
     gpsDriver.loop();

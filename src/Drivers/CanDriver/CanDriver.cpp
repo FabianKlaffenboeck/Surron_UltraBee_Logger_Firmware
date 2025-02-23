@@ -10,7 +10,6 @@ bool _hasCallback = false;
 void (*cb_func)(CanMsg canMsg);
 
 bool CanInit(gpio_num_t rxPin, gpio_num_t txPin, int busSpeed) {
-
     can_general_config_t g_config = CAN_GENERAL_CONFIG_DEFAULT(rxPin, txPin, CAN_MODE_NORMAL);
     can_timing_config_t t_config = CAN_TIMING_CONFIG_500KBITS();
     can_filter_config_t f_config = CAN_FILTER_CONFIG_ACCEPT_ALL();
@@ -28,7 +27,6 @@ bool CanInit(gpio_num_t rxPin, gpio_num_t txPin, int busSpeed) {
 
 
 void CanWrite(CanMsg dataFrame) {
-
     can_message_t message;
 
     message.identifier = dataFrame.id;
@@ -50,7 +48,6 @@ void CanWrite(CanMsg dataFrame) {
 }
 
 bool CanReadFrame(CanMsg *canMsg) {
-
     //Wait for rxMessage to be received
     can_message_t rxMessage;
     if (can_receive(&rxMessage, pdMS_TO_TICKS(0)) != ESP_OK) {
@@ -82,7 +79,7 @@ void CanHandlerLoop() {
     }
 }
 
-void CanAddCallBack(void (*fun_ptr)(CanMsg canMsg)) {
+void CanAddCallBack(void(*fun_ptr)(CanMsg canMsg)) {
     cb_func = fun_ptr;
     _hasCallback = true;
 }

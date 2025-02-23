@@ -43,7 +43,6 @@ private:
     static void mqttCallback(char *topic, uint8_t *payload, unsigned int len);
 
     bool mqttConnect();
-
 };
 
 

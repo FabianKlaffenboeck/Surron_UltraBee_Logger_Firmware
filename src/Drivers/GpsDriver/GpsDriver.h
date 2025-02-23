@@ -18,7 +18,6 @@ struct GpsData {
 };
 
 class GpsDriver {
-
 public:
     GpsDriver(uint8_t rxPin, uint8_t txPin);
 
