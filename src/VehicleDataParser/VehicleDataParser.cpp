@@ -3,7 +3,6 @@
 //
 
 #include "VehicleDataParser.h"
-#include "models/VehicleData.h"
 
 void VehicleDataParser::pars(CanMsg canMsg) {
     switch (canMsg.id) {

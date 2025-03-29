@@ -5,8 +5,8 @@
 #ifndef FIRMWARE_VEHICLEDATAPARSER_H
 #define FIRMWARE_VEHICLEDATAPARSER_H
 
-#include "../../Drivers/CanDriver/CanModels.h"
-#include "models/VehicleData.h"
+#include <cstdint>
+#include "../lib/CanDriver/CanModels.h"
 
 struct VehicleBusData {
     uint8_t speed = 0;
